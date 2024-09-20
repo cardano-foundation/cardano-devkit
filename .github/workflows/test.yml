@@ -32,5 +32,5 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: 🎳 Run tests
-        working-directory: ci
+        working-directory: cli
         run: cargo test --verbose
