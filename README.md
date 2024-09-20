@@ -1,9 +1,9 @@
 # Cardano DevKit 🪚🔩⛓
 
 <p align="left">
-<img alt="Tests" src="https://github.com/cardano-foundation/cardano-devkit/actions/workflows/test.yaml/badge.svg?branch=main" />
-<img alt="Release" src="https://github.com/cardano-foundation/cardano-devkit/actions/workflows/release.yaml/badge.svg?branch=main" />
-<img alt="Publish" src="https://github.com/cardano-foundation/cardano-devkit/actions/workflows/publish.yaml/badge.svg?branch=main" />
+<img alt="Tests" src="https://github.com/cardano-foundation/cardano-devkit/actions/workflows/test.yml/badge.svg?branch=main" />
+<img alt="Release" src="https://github.com/cardano-foundation/cardano-devkit/actions/workflows/release.yml/badge.svg?branch=main" />
+<img alt="Publish" src="https://github.com/cardano-foundation/cardano-devkit/actions/workflows/publish.yml/badge.svg?branch=main" />
 <a href="https://conventionalcommits.org"><img alt="conventionalcommits" src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits" /></a>
 <a href="https://opensource.org/licenses/MIT"><img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" /></a>
 <a href="https://discord.gg/4WVNHgQ7bP"><img alt="Discord" src="https://img.shields.io/discord/1022471509173882950?label=Discord"></a>

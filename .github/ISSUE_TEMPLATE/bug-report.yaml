@@ -29,9 +29,8 @@ body:
       description: Steps to reproduce the behavior.
       placeholder: |
         1. In my environment ...
-        2. With this browser ...
-        3. Run function xyz '...'
-        4. See the error message ...
+        2. Run command xyz '...'
+        3. See the error message ...
     validations:
       required: true
   - type: textarea
@@ -39,11 +38,9 @@ body:
       label: Environment
       description: |
         examples:
-          - **OS**: Ubuntu 23.10
-          - **Browser**: Google Chrome (version 120.0.6099.129)
+          - **OS**: Ubuntu 24.04
       value: |
         - OS:
-        - Browser:
       render: markdown
     validations:
       required: false
