@@ -16,7 +16,6 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
 
       - name: 📌 Cache cargo registry
-        working-directory: ./ci
         uses: actions/cache@v3
         with:
           path: ~/.cargo/registry
@@ -25,7 +24,6 @@ jobs:
             ${{ runner.os }}-cargo-registry-
 
       - name: 📌 Cache cargo build
-        working-directory: ./ci
         uses: actions/cache@v3
         with:
           path: target
