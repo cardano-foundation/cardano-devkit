@@ -1,0 +1,33 @@
+name: 📦 Build and Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [x86_64-unknown-linux-gnu, x86_64-pc-windows-gnu, x86_64-apple-darwin]
+
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v3
+
+    - name: 🔌 Set up Rust
+      uses: actions/setup-rust@v1
+      with:
+        rust-version: stable
+
+    - name: 🎁 Install cross
+      run: cargo install cross
+
+    - name: 🪄 Build with cross
+      run: cross build --release --target ${{ matrix.target }}
+
+    - name: 📤 Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.target }}-cardano-devkit
+        path: target/${{ matrix.target }}/release/cardano-devkit
