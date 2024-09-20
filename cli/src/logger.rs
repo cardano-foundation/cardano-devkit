@@ -76,30 +76,36 @@ pub fn log(message: &str) {
     logger.log(message, Verbosity::Standard);
 }
 
+#[allow(dead_code)]
 pub fn error(message: &str) {
     let logger = LOGGER.lock().unwrap();
     logger.log(message, Verbosity::Error);
 }
 
+#[allow(dead_code)]
 pub fn warn(message: &str) {
     let logger = LOGGER.lock().unwrap();
     logger.log(message, Verbosity::Warning);
 }
 
+#[allow(dead_code)]
 pub fn info(message: &str) {
     let logger = LOGGER.lock().unwrap();
     logger.log(message, Verbosity::Info);
 }
 
+#[allow(dead_code)]
 pub fn verbose(message: &str) {
     let logger = LOGGER.lock().unwrap();
     logger.log(message, Verbosity::Verbose);
 }
 
+#[allow(dead_code)]
 pub fn get_verbosity() -> Verbosity {
     LOGGER.lock().unwrap().verbosity.clone()
 }
 
+#[allow(dead_code)]
 pub fn is_quite() -> bool {
     get_verbosity() == Verbosity::Quite
 }
