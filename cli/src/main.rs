@@ -1,11 +1,9 @@
-use std::path::PathBuf;
-
 use clap::Parser;
 use clap::Subcommand;
-use utils::default_config_path;
 
 mod config;
 mod logger;
+mod start;
 mod utils;
 
 #[derive(Parser)]
@@ -18,9 +16,6 @@ struct Args {
     /// Verbosity level (0 = quite, 1 = standard, 2 = warning, 3 = error, 4 = info, 5 = verbose)
     #[arg(long, default_value_t = 1)]
     verbose: usize,
-    /// Configuration file name. Default is ~/.cardano-devkit/config.json
-    #[arg(short, long, default_value = default_config_path().into_os_string())]
-    config: PathBuf,
 }
 
 #[derive(Subcommand)]
@@ -35,18 +30,39 @@ enum Commands {
 
 #[tokio::main]
 async fn main() {
+    let os = std::env::consts::OS;
+    let arch = std::env::consts::ARCH;
+
+    if !(os == "linux" && arch == "x86") && !(os == "macos" && arch == "aarch64") {
+        eprintln!(
+            "Unfortunately, your operating system ({}, {}) is not currently supported. Please feel free to submit a feature request at: https://github.com/cardano-foundation/cardano-devkit/issues/new/choose",
+            os, arch
+        );
+        std::process::exit(1);
+    }
+
     let args = Args::parse();
     utils::print_header();
     logger::init(args.verbose);
-    config::init(args.config.to_str().unwrap_or_else(|| {
-        logger::error("Failed to get configuration file path");
-        panic!("Failed to get configuration file path");
-    }))
-    .await;
+    config::init();
+
+    utils::check_setup().await.unwrap_or_else(|e| {
+        logger::error(&format!(
+            "Failed to check your Yaci DevKit and services setup: {}",
+            e
+        ));
+        std::process::exit(1);
+    });
 
     match args.command {
         Commands::Init => logger::log("Init command not implemented yet"),
-        Commands::Start => logger::log("Start command not implemented yet"),
+        Commands::Start => match start::start_devkit() {
+            Ok(_) => logger::log("Cardano DevKit started successfully"),
+            Err(e) => {
+                logger::error(&format!("Failed to start Cardano DevKit: {}", e));
+                std::process::exit(1);
+            }
+        },
         Commands::Stop => logger::log("Stop command not implemented yet"),
     }
 }
