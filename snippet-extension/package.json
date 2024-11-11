@@ -1,0 +1,24 @@
+{
+  "name": "cardano-dev-snippet",
+  "displayName": "cardano-dev-snippet",
+  "description": "A snippet extension for cardano development",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^0.10.5"
+  },
+  "categories": [
+    "Snippets"
+  ],
+  "contributes": {
+    "snippets": [
+      {
+        "language": "typescript",
+        "path": "./snippets/meshsdk-txbuilder.json"
+      },
+      {
+        "language": "typescript",
+        "path": "./snippets/meshsdk-wallet-hooks.json"
+      }
+    ]
+  }
+}
