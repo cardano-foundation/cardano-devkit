@@ -11,6 +11,8 @@
 
 Welcome to **Cardano DevKit!** This project is designed to be the go-to toolkit for setting up a local Cardano network. Whether the goal is to test, showcase, scaffold, or template, Cardano DevKit bundles a variety of community tools, based on the powerful [Yaci DevKit](https://github.com/bloxbean/yaci-devkit), to streamline and support the development process.
 
+About the product: [product specs](PRODUCT.md)
+
 ## 🚧 Under Construction 🚧
 
 Please note that **Cardano DevKit** is currently under construction. We are actively working on adding more features and improving the existing ones. Stay tuned for updates! 
