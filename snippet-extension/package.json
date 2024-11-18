@@ -4,6 +4,10 @@
   "description": "A snippet extension for cardano development",
   "publisher": "cardano-dev-snippet",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cardano-foundation/cardano-devkit"
+  },
   "engines": {
     "vscode": "^1.65.0"
   },
@@ -11,14 +15,15 @@
     "Other",
     "Snippets"
   ],
-  "rootDir": "./",
+  "license": "SEE LICENSE IN LICENSE",
+  "rootDir": "../",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "cardano-extension.readFile",
-        "title": "Read File"
+        "command": "cardano-extension.analyzeScript",
+        "title": "Analyze Script"
       }
     ],
     "snippets": [

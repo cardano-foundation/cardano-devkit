@@ -4,9 +4,9 @@ export function activate(context: vscode.ExtensionContext) {
   console.log("Cardano devkit extension activated");
 
   const read = vscode.commands.registerCommand(
-    "cardano-extension.readFile",
+    "cardano-extension.analyzeScript",
     () => {
-      vscode.window.showInformationMessage("Reading File");
+      vscode.window.showInformationMessage("Analyzing Cardano script file...");
       const options: vscode.OpenDialogOptions = {
         canSelectMany: false,
         canSelectFolders: false,
