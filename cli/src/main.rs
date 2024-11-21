@@ -21,7 +21,11 @@ struct Args {
 #[derive(Subcommand)]
 enum Commands {
     /// Initializes a new project from a template
-    Init,
+    Init {
+        /// The path of where to store your project binaries
+        #[arg(short, long = "~/.cardano-devkit")]
+        path: Option<String>,
+    },
     /// Starts a local cardano development environment including all necessary components
     Start,
     /// Stops the local cardano development environment
@@ -44,18 +48,18 @@ async fn main() {
     let args = Args::parse();
     utils::print_header();
     logger::init(args.verbose);
-    config::init();
-
-    utils::check_setup().await.unwrap_or_else(|e| {
-        logger::error(&format!(
-            "Failed to check your Yaci DevKit and services setup: {}",
-            e
-        ));
-        std::process::exit(1);
-    });
 
     match args.command {
-        Commands::Init => logger::log("Init command not implemented yet"),
+        Commands::Init { path } => {
+            config::init(path);
+            utils::check_setup().await.unwrap_or_else(|e| {
+                logger::error(&format!(
+                    "Failed to check your Yaci DevKit and services setup: {}",
+                    e
+                ));
+                std::process::exit(1);
+            });
+        }
         Commands::Start => match start::start_devkit() {
             Ok(_) => logger::log("Cardano DevKit started successfully"),
             Err(e) => {

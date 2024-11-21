@@ -21,27 +21,36 @@ pub struct YaciDevkit {
 }
 
 impl Config {
-    fn default() -> Self {
+    fn default(path: String) -> Self {
         Config {
             yaci_devkit: YaciDevkit {
-                path: format!("{}/yaci-devkit", get_devkit_root()),
-                services_path: format!("{}/services", get_devkit_root()),
+                path: Path::new(&path)
+                    .join("yaci-devkit")
+                    .to_string_lossy()
+                    .to_string(),
+                services_path: Path::new(&path)
+                    .join("services")
+                    .to_string_lossy()
+                    .to_string(),
                 version: "0.9.3-beta".to_string(),
             },
         }
     }
 
-    fn load() -> Self {
-        let config_path = format!("{}/config.json", get_devkit_root());
+    fn load(path: Option<String>) -> Self {
+        let config_path = Path::new(&get_devkit_root())
+            .join("config.json")
+            .to_string_lossy()
+            .to_string();
         if Path::new(&config_path).exists() {
             let file_content =
                 fs::read_to_string(config_path).expect("Failed to read config file.");
             serde_json::from_str(&file_content).unwrap_or_else(|_| {
                 eprintln!("Failed to parse config file, using default config.");
-                Config::default()
+                Config::default(path.unwrap_or(get_devkit_root()))
             })
         } else {
-            let default_config = Config::default();
+            let default_config = Config::default(path.unwrap_or(get_devkit_root()));
             log(&format!("🚀 Looks like it's your first time using the Cardano DevKit. Let's set up a config for you at: {}", config_path));
 
             let parent_dir = Path::new(&config_path).parent().unwrap();
@@ -64,7 +73,7 @@ impl Config {
 }
 
 lazy_static! {
-    static ref CONFIG: Mutex<Config> = Mutex::new(Config::default());
+    static ref CONFIG: Mutex<Config> = Mutex::new(Config::default(get_devkit_root()));
 }
 
 pub fn get_devkit_root() -> String {
@@ -75,9 +84,9 @@ pub fn get_devkit_root() -> String {
     }
 }
 
-pub fn init() {
+pub fn init(path: Option<String>) {
     let mut config = CONFIG.lock().unwrap();
-    *config = Config::load();
+    *config = Config::load(path);
 }
 
 pub fn get_config() -> Config {
