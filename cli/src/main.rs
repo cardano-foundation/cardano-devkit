@@ -22,8 +22,8 @@ struct Args {
 enum Commands {
     /// Initializes a new project from a template
     Init {
-        /// The path of where to store your project binaries
-        #[arg(short, long = "~/.cardano-devkit")]
+        /// The path of where to store your project binaries. Default is ~/.cardano-devkit
+        #[arg(short, long)]
         path: Option<String>,
     },
     /// Starts a local cardano development environment including all necessary components
