@@ -16,7 +16,7 @@
     "Snippets"
   ],
   "license": "SEE LICENSE IN LICENSE",
-  "rootDir": "../",
+  "rootDir": "./",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
