@@ -5,4 +5,5 @@ export const scriptTypeMap = {
   Address: "ScriptAddress",
   PolicyId: "PolicyId",
   ByteArray: "ByteString",
+  Int: "Integer",
 };
