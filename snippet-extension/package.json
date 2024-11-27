@@ -22,8 +22,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "cardano-extension.analyzeScript",
-        "title": "Analyze Script"
+        "command": "cardano-extension.analyzeScriptJSON",
+        "title": "Analyze Script (JSON data type)"
+      },
+      {
+        "command": "cardano-extension.analyzeScriptMesh",
+        "title": "Analyze Script (Mesh data type)"
       }
     ],
     "snippets": [
@@ -37,7 +41,15 @@
       },
       {
         "language": "aiken",
-        "path": "./snippets/meshsdk-wallet-hooks.json"
+        "path": "./snippets/aiken/aiken-helloworld.json"
+      },
+      {
+        "language": "aiken",
+        "path": "./snippets/vodka/vodka-helloworld.json"
+      },
+      {
+        "language": "rust",
+        "path": "./snippets/whiskey/whiskey-helloworld.json"
       }
     ]
   },
