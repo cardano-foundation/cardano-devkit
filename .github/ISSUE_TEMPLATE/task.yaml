@@ -1,0 +1,42 @@
+name: 📝 Task
+description: Create a task
+title: "[Task]: "
+labels: ["task"]
+
+body:
+  - type: textarea
+    attributes:
+      label: 📝 Task description
+      description: >
+        A clear and concise description of the task.
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Component
+      description: >
+        Select the component related to this feature request.
+      options:
+        - ui
+        - cli
+        - package distribution
+        - testing
+        - explorer
+        - IDE plugins
+        - other
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to complete
+      description: >
+        Detailed steps to complete the task.
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: >
+        Add any other context about the task here.
+  - type: markdown
+    attributes:
+      value: >
+        Thanks for contributing 🎉!!
