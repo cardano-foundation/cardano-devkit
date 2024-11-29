@@ -15,6 +15,7 @@ use crate::config;
 use crate::logger::{error, log};
 
 pub fn print_header() {
+    const VERSION: &str = env!("CARGO_PKG_VERSION");
     println!(
         r#"
    _____              _                    
@@ -28,8 +29,9 @@ pub fn print_header() {
  | |  | | _____   _| ' / _| |_             
  | |  | |/ _ \ \ / /  < | | __|            
  | |__| |  __/\ V /| . \| | |_             
- |_____/ \___| \_/ |_|\_\_|\__| v.0.0.1    
-    "#
+ |_____/ \___| \_/ |_|\_\_|\__| v{}    
+    "#,
+        VERSION
     );
 }
 
