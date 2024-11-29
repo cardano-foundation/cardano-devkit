@@ -11,7 +11,7 @@ body:
         A clear and concise description of the task.
     validations:
       required: true
-  - type: select
+  - type: dropdown
     attributes:
       label: Component
       description: >
@@ -24,8 +24,8 @@ body:
         - explorer
         - IDE plugins
         - other
-      validations:
-        required: true
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Steps to complete
