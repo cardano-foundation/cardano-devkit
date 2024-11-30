@@ -148,6 +148,13 @@ pub fn resolve_home_symbol(path: &str) -> String {
     path.to_string()
 }
 
+pub fn default_config_path() -> PathBuf {
+    let mut config_path = home_dir().unwrap_or_else(|| PathBuf::from("~"));
+    config_path.push(".cardano-devkit");
+    config_path.push("config.json");
+    config_path
+}
+
 pub async fn check_setup() -> Result<(), Box<dyn std::error::Error>> {
     let config = config::get_config();
     let yaci_devkit_root = resolve_home_symbol(&config.yaci_devkit.path);
