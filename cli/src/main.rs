@@ -47,7 +47,7 @@ async fn main() {
     let os = std::env::consts::OS;
     let arch = std::env::consts::ARCH;
 
-    if !(os == "linux" && arch == "x86") && !(os == "macos" && arch == "aarch64") {
+    if !(os == "linux" && arch.contains("x86")) && !(os == "macos" && arch == "aarch64") {
         eprintln!(
             "Unfortunately, your operating system ({}, {}) is not currently supported. Please feel free to submit a feature request at: https://github.com/cardano-foundation/cardano-devkit/issues/new/choose",
             os, arch
