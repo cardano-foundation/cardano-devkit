@@ -1,4 +1,4 @@
-export const scriptTypeMap = {
+export const jsonTypeMap = {
   WithdrawalScriptHashes: "WithdrawalScriptHashes",
   ScriptHash: "ScriptHash",
   KeyHash: "PubKeyHash",
@@ -6,4 +6,10 @@ export const scriptTypeMap = {
   PolicyId: "PolicyId",
   ByteArray: "ByteString",
   Int: "Integer",
+};
+
+export const meshTypeMap = {
+  string: "ByteString",
+  bigint: "Integer",
+  MBool: "Bool",
 };

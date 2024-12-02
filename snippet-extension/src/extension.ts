@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { scriptTypeMap } from "./data/typeMap";
+import { jsonTypeMap, meshTypeMap } from "./data/typeMap";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("Cardano devkit extension activated");
@@ -103,12 +103,10 @@ export function activate(context: vscode.ExtensionContext) {
                               field.title
                             }`;
                           } else {
-                            for (const key in scriptTypeMap) {
+                            for (const key in jsonTypeMap) {
                               if (type.includes(key)) {
                                 mappedType =
-                                  scriptTypeMap[
-                                    key as keyof typeof scriptTypeMap
-                                  ];
+                                  jsonTypeMap[key as keyof typeof jsonTypeMap];
                                 break;
                               }
                             }
@@ -248,7 +246,7 @@ export function activate(context: vscode.ExtensionContext) {
                         const fields = type.fields;
 
                         let fieldSnippet = [
-                          `export type ${type.title} = ConStr0<[`,
+                          `export type M${type.title} = MConStr0<[`,
                         ];
 
                         fields.forEach((field: any) => {
@@ -259,22 +257,28 @@ export function activate(context: vscode.ExtensionContext) {
                             type = split[split.length - 1];
                           }
 
-                          let mappedType = type;
+                          let mappedType =
+                            String(type).charAt(0).toLowerCase() +
+                            String(type).slice(1);
+
+                          console.log(mappedType);
 
                           if (type.includes("Tuple")) {
                             const tuple = type.split("Tuple$");
                             const tupleTypes = tuple[1].split("_");
 
-                            mappedType = `Tuple<${tupleTypes.join(", ")}>, // ${
-                              field.title
-                            }`;
+                            mappedType = `MTuple<${tupleTypes.join(
+                              ", "
+                            )}>, // ${field.title}`;
+
+                            if (!imports.includes("MTuple")) {
+                              imports.push("MTuple");
+                            }
                           } else {
-                            for (const key in scriptTypeMap) {
+                            for (const key in meshTypeMap) {
                               if (type.includes(key)) {
                                 mappedType =
-                                  scriptTypeMap[
-                                    key as keyof typeof scriptTypeMap
-                                  ];
+                                  meshTypeMap[key as keyof typeof meshTypeMap];
                                 break;
                               }
                             }
@@ -303,7 +307,9 @@ export function activate(context: vscode.ExtensionContext) {
 
                     if (anyOf.length > 1) {
                       definitionSnippet = [
-                        `export type ${title} = ConStr0<${types.join(" | ")}>;`,
+                        `export type ${title} = MConStr0<${types.join(
+                          " | "
+                        )}>;`,
                         "",
                         ...definitionSnippet,
                       ];
@@ -318,7 +324,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             if (imports.length > 0) {
               fullSnippet = [
-                `import { ConStr0, ${imports.join(
+                `import { MConStr0, ${imports.join(
                   ", "
                 )}} from "@meshsdk/core";`,
                 "",
