@@ -1,0 +1,13 @@
+{
+    "MintingBlueprint": {
+        "prefix": [
+            "Minting",
+            "MintingBlueprint"
+        ],
+        "body": [
+            "const blueprint = new MintingBlueprint(\"V3\");",
+            "blueprint.paramScript(\"${compiledCode:CborHex}\", [\"${params:params}\"], \"${paramsType:Mesh}\");"
+        ],
+        "description": "Initialize a Minting Blueprint"
+    }
+}

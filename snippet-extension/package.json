@@ -33,11 +33,15 @@
     "snippets": [
       {
         "language": "typescript",
-        "path": "./snippets/meshsdk-txbuilder.json"
+        "path": "./snippets/mesh/mesh-txbuilder.json"
       },
       {
         "language": "typescript",
-        "path": "./snippets/meshsdk-wallet-hooks.json"
+        "path": "./snippets/mesh/mesh-wallet-hooks.json"
+      },
+      {
+        "language": "typescript",
+        "path": "./snippets/mesh/mesh-blueprint-utils.json"
       },
       {
         "language": "aiken",
