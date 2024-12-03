@@ -65,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
                     let types: string[] = [];
                     let definitionSnippet: string[] = [];
 
-                    anyOf.forEach((type: any) => {
+                    anyOf.forEach((type: any, index: number) => {
                       if (!type.title) {
                         return;
                       }
@@ -81,22 +81,26 @@ export function activate(context: vscode.ExtensionContext) {
                       if (type.fields && type.fields.length > 0) {
                         const fields = type.fields;
 
+                        if (!imports.includes(`ConStr${index}`)) {
+                          imports.push(`ConStr${index}`);
+                        }
+
                         let fieldSnippet = [
-                          `export type ${type.title} = ConStr0<[`,
+                          `export type ${type.title} = ConStr${index}<[`,
                         ];
 
-                        fields.forEach((field: any) => {
+                        fields.forEach((field: any, index: number) => {
                           const ref = field.$ref.split("/");
-                          let type = ref[ref.length - 1];
-                          if (type.includes("~1")) {
-                            const split = type.split("~1");
-                            type = split[split.length - 1];
+                          let fieldType = ref[ref.length - 1];
+                          if (fieldType.includes("~1")) {
+                            const split = fieldType.split("~1");
+                            fieldType = split[split.length - 1];
                           }
 
-                          let mappedType = type;
+                          let mappedType = fieldType;
 
-                          if (type.includes("Tuple")) {
-                            const tuple = type.split("Tuple$");
+                          if (fieldType.includes("Tuple")) {
+                            const tuple = fieldType.split("Tuple$");
                             const tupleTypes = tuple[1].split("_");
 
                             mappedType = `Tuple<${tupleTypes.join(", ")}>, // ${
@@ -104,7 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
                             }`;
                           } else {
                             for (const key in jsonTypeMap) {
-                              if (type.includes(key)) {
+                              if (mappedType.includes(key)) {
                                 mappedType =
                                   jsonTypeMap[key as keyof typeof jsonTypeMap];
                                 break;
@@ -120,7 +124,7 @@ export function activate(context: vscode.ExtensionContext) {
                           }
 
                           fieldSnippet.push(
-                            `${mappedType}, // ${field.title}: ${type}`
+                            `${mappedType}, // ${field.title}: ${fieldType}`
                           );
                         });
 
@@ -135,7 +139,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                     if (anyOf.length > 1) {
                       definitionSnippet = [
-                        `export type ${title} = ConStr0<${types.join(" | ")}>;`,
+                        `export type ${title} = ${types.join(" | ")};`,
                         "",
                         ...definitionSnippet,
                       ];
@@ -150,9 +154,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             if (imports.length > 0) {
               fullSnippet = [
-                `import { ConStr0, ${imports.join(
-                  ", "
-                )}} from "@meshsdk/core";`,
+                `import { ${imports.join(", ")} } from "@meshsdk/core";`,
                 "",
                 ...fullSnippet,
               ];
@@ -229,7 +231,7 @@ export function activate(context: vscode.ExtensionContext) {
                     let types: string[] = [];
                     let definitionSnippet: string[] = [];
 
-                    anyOf.forEach((type: any) => {
+                    anyOf.forEach((type: any, index: number) => {
                       if (!type.title) {
                         return;
                       }
@@ -245,26 +247,30 @@ export function activate(context: vscode.ExtensionContext) {
                       if (type.fields && type.fields.length > 0) {
                         const fields = type.fields;
 
+                        if (!imports.includes(`MConStr${index}`)) {
+                          imports.push(`MConStr${index}`);
+                        }
+
                         let fieldSnippet = [
-                          `export type M${type.title} = MConStr0<[`,
+                          `export type M${type.title} = MConStr${index}<[`,
                         ];
 
                         fields.forEach((field: any) => {
                           const ref = field.$ref.split("/");
-                          let type = ref[ref.length - 1];
-                          if (type.includes("~1")) {
-                            const split = type.split("~1");
-                            type = split[split.length - 1];
+                          let fieldType = ref[ref.length - 1];
+                          if (fieldType.includes("~1")) {
+                            const split = fieldType.split("~1");
+                            fieldType = split[split.length - 1];
                           }
 
                           let mappedType =
-                            String(type).charAt(0).toLowerCase() +
-                            String(type).slice(1);
+                            String(fieldType).charAt(0).toLowerCase() +
+                            String(fieldType).slice(1);
 
                           console.log(mappedType);
 
-                          if (type.includes("Tuple")) {
-                            const tuple = type.split("Tuple$");
+                          if (fieldType.includes("Tuple")) {
+                            const tuple = fieldType.split("Tuple$");
                             const tupleTypes = tuple[1].split("_");
 
                             mappedType = `MTuple<${tupleTypes.join(
@@ -293,7 +299,7 @@ export function activate(context: vscode.ExtensionContext) {
                           }
 
                           fieldSnippet.push(
-                            `${mappedType}, // ${field.title}: ${type}`
+                            `${mappedType}, // ${field.title}: ${fieldType}`
                           );
                         });
 
@@ -308,9 +314,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                     if (anyOf.length > 1) {
                       definitionSnippet = [
-                        `export type ${title} = MConStr0<${types.join(
-                          " | "
-                        )}>;`,
+                        `export type ${title} = ${types.join(" | ")};`,
                         "",
                         ...definitionSnippet,
                       ];
@@ -325,9 +329,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             if (imports.length > 0) {
               fullSnippet = [
-                `import { MConStr0, ${imports.join(
-                  ", "
-                )}} from "@meshsdk/core";`,
+                `import { ${imports.join(", ")} } from "@meshsdk/core";`,
                 "",
                 ...fullSnippet,
               ];
