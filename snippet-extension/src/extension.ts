@@ -276,7 +276,8 @@ export function activate(context: vscode.ExtensionContext) {
                             }
                           } else {
                             for (const key in meshTypeMap) {
-                              if (type.includes(key)) {
+                              console.log(key, mappedType.toLowerCase());
+                              if (mappedType.toLowerCase().includes(key)) {
                                 mappedType =
                                   meshTypeMap[key as keyof typeof meshTypeMap];
                                 break;

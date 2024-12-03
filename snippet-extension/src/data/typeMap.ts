@@ -9,7 +9,10 @@ export const jsonTypeMap = {
 };
 
 export const meshTypeMap = {
-  string: "ByteString",
-  bigint: "Integer",
-  MBool: "Bool",
+  bytestring: "string",
+  int: "bigint",
+  bool: "MBool",
+  tuple: "MTuple",
+  keyhash: "pubKeyHash",
+  address: "scriptAddress",
 };
