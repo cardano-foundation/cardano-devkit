@@ -81,10 +81,7 @@ jobs:
   publish:
     needs: [build, check-version]
     if: needs.check-version.outputs.version-updated == 'true' || github.event_name == 'release'
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: vscode-extension
