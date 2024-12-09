@@ -1,8 +1,8 @@
 {
-  "name": "cardano-dev-snippet",
-  "displayName": "cardano-dev-snippet",
-  "description": "A snippet extension for cardano development",
-  "publisher": "cardano-dev-snippet",
+  "name": "cardano-devkit-vscode",
+  "displayName": "cardano-devkit-vscode",
+  "description": "A VSCode extension for cardano development",
+  "publisher": "cardano-devkit",
   "version": "0.0.1",
   "repository": {
     "type": "git",
