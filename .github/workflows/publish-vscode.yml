@@ -37,7 +37,6 @@ jobs:
 
   check-version:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
     outputs:
       version-updated: ${{ steps.compare-versions.outputs.version-updated }}
     steps:
