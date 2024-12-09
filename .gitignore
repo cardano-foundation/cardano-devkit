@@ -13,3 +13,5 @@
 !.vscode/extensions.json
 
 .DS_Store
+
+vscode-extension/.vscode-test
