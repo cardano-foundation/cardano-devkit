@@ -1,9 +1,10 @@
 {
   "name": "cardano-devkit-vscode",
-  "displayName": "cardano-devkit-vscode",
+  "icon": "icon.png",
+  "displayName": "Cardano Devkit (Alpha)",
   "description": "A VSCode extension for cardano development",
-  "publisher": "cardano-devkit",
-  "version": "0.0.1",
+  "publisher": "sidan-lab",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/cardano-foundation/cardano-devkit"
@@ -63,7 +64,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile && yarn run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "deploy": "vsce publish --yarn"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.9",
