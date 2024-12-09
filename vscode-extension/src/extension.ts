@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { jsonTypeMap, meshTypeMap } from "./data/typeMap";
+import { jsonTypeMap, basicTypeList, meshTypeMap } from "./data/typeMap";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("Cardano devkit extension activated");
@@ -43,6 +43,11 @@ export function activate(context: vscode.ExtensionContext) {
                 const anyOf = definitions[key]?.anyOf;
 
                 if (title) {
+                  // Skip if it is basic Cardano type
+                  if (basicTypeList.includes(title)) {
+                    return;
+                  }
+
                   // Skip if already included in the blueprint
                   if (imports.includes(title) || customs.includes(title)) {
                     return;
@@ -137,15 +142,15 @@ export function activate(context: vscode.ExtensionContext) {
                       }
                     });
 
-                    if (anyOf.length > 1) {
-                      definitionSnippet = [
-                        `export type ${title} = ${types.join(" | ")};`,
-                        "",
-                        ...definitionSnippet,
-                      ];
-                    }
-
                     if (definitionSnippet.length > 0) {
+                      if (anyOf.length > 1) {
+                        definitionSnippet = [
+                          `export type ${title} = ${types.join(" | ")};`,
+                          "",
+                          ...definitionSnippet,
+                        ];
+                      }
+
                       fullSnippet = [...fullSnippet, "", ...definitionSnippet];
                     }
                   }
@@ -209,6 +214,11 @@ export function activate(context: vscode.ExtensionContext) {
                 const anyOf = definitions[key]?.anyOf;
 
                 if (title) {
+                  // Skip if it is basic Cardano type
+                  if (basicTypeList.includes(title)) {
+                    return;
+                  }
+
                   // Skip if already included in the blueprint
                   if (imports.includes(title) || customs.includes(title)) {
                     return;
@@ -228,15 +238,11 @@ export function activate(context: vscode.ExtensionContext) {
                   }
 
                   if (anyOf) {
-                    let types: string[] = [];
+                    let MTypes: string[] = [];
                     let definitionSnippet: string[] = [];
 
                     anyOf.forEach((type: any, index: number) => {
-                      if (!type.title) {
-                        return;
-                      }
-
-                      types.push(type.title);
+                      MTypes.push(`M${type.title}`);
 
                       if (definitionTypes.includes(type.title)) {
                         return;
@@ -267,8 +273,6 @@ export function activate(context: vscode.ExtensionContext) {
                             String(fieldType).charAt(0).toLowerCase() +
                             String(fieldType).slice(1);
 
-                          console.log(mappedType);
-
                           if (fieldType.includes("Tuple")) {
                             const tuple = fieldType.split("Tuple$");
                             const tupleTypes = tuple[1].split("_");
@@ -282,7 +286,6 @@ export function activate(context: vscode.ExtensionContext) {
                             }
                           } else {
                             for (const key in meshTypeMap) {
-                              console.log(key, mappedType.toLowerCase());
                               if (mappedType.toLowerCase().includes(key)) {
                                 mappedType =
                                   meshTypeMap[key as keyof typeof meshTypeMap];
@@ -312,15 +315,15 @@ export function activate(context: vscode.ExtensionContext) {
                       }
                     });
 
-                    if (anyOf.length > 1) {
-                      definitionSnippet = [
-                        `export type ${title} = ${types.join(" | ")};`,
-                        "",
-                        ...definitionSnippet,
-                      ];
-                    }
-
                     if (definitionSnippet.length > 0) {
+                      if (anyOf.length > 1) {
+                        definitionSnippet = [
+                          `export type M${title} = ${MTypes.join(" | ")};`,
+                          "",
+                          ...definitionSnippet,
+                        ];
+                      }
+
                       fullSnippet = [...fullSnippet, "", ...definitionSnippet];
                     }
                   }

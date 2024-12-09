@@ -15,4 +15,15 @@ export const meshTypeMap = {
   tuple: "MTuple",
   keyhash: "pubKeyHash",
   address: "scriptAddress",
+  option: "option",
 };
+
+// A list of mesh types to be skipped for imports and generation
+export const basicTypeList = [
+  "Bool",
+  "Option",
+  "ByteString",
+  "Integer",
+  "PubKeyHash",
+  "ScriptAddress",
+];
