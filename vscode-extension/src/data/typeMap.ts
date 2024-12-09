@@ -26,4 +26,6 @@ export const basicTypeList = [
   "Integer",
   "PubKeyHash",
   "ScriptAddress",
+  "Address",
+  "Collection",
 ];

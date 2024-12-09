@@ -45,6 +45,9 @@ export function activate(context: vscode.ExtensionContext) {
                 if (title) {
                   // Skip if it is basic Cardano type
                   if (basicTypeList.includes(title)) {
+                    if (!imports.includes(title)) {
+                      imports.push(title);
+                    }
                     return;
                   }
 
@@ -216,6 +219,9 @@ export function activate(context: vscode.ExtensionContext) {
                 if (title) {
                   // Skip if it is basic Cardano type
                   if (basicTypeList.includes(title)) {
+                    if (!imports.includes(title)) {
+                      imports.push(title);
+                    }
                     return;
                   }
 
