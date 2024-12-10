@@ -4,7 +4,7 @@
   "displayName": "Cardano Devkit (Alpha)",
   "description": "A VSCode extension for cardano development",
   "publisher": "sidan-lab",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/cardano-foundation/cardano-devkit"
