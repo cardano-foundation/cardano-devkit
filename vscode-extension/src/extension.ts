@@ -86,16 +86,16 @@ export function activate(context: vscode.ExtensionContext) {
 
                       definitionTypes.push(type.title);
 
+                      if (!imports.includes(`ConStr${index}`)) {
+                        imports.push(`ConStr${index}`);
+                      }
+
+                      let fieldSnippet = [
+                        `export type ${type.title} = ConStr${index}<[`,
+                      ];
+
                       if (type.fields && type.fields.length > 0) {
                         const fields = type.fields;
-
-                        if (!imports.includes(`ConStr${index}`)) {
-                          imports.push(`ConStr${index}`);
-                        }
-
-                        let fieldSnippet = [
-                          `export type ${type.title} = ConStr${index}<[`,
-                        ];
 
                         fields.forEach((field: any, index: number) => {
                           const ref = field.$ref.split("/");
@@ -135,14 +135,13 @@ export function activate(context: vscode.ExtensionContext) {
                             `${mappedType}, // ${field.title}: ${fieldType}`
                           );
                         });
-
-                        fieldSnippet.push(`]>;`);
-
-                        definitionSnippet = [
-                          ...definitionSnippet,
-                          ...fieldSnippet,
-                        ];
                       }
+                      fieldSnippet.push(`]>;`);
+
+                      definitionSnippet = [
+                        ...definitionSnippet,
+                        ...fieldSnippet,
+                      ];
                     });
 
                     if (definitionSnippet.length > 0) {
@@ -256,16 +255,16 @@ export function activate(context: vscode.ExtensionContext) {
 
                       definitionTypes.push(type.title);
 
-                      if (type.fields && type.fields.length > 0) {
+                      if (!imports.includes(`MConStr${index}`)) {
+                        imports.push(`MConStr${index}`);
+                      }
+
+                      let fieldSnippet = [
+                        `export type M${type.title} = MConStr${index}<[`,
+                      ];
+
+                      if (type.fields) {
                         const fields = type.fields;
-
-                        if (!imports.includes(`MConStr${index}`)) {
-                          imports.push(`MConStr${index}`);
-                        }
-
-                        let fieldSnippet = [
-                          `export type M${type.title} = MConStr${index}<[`,
-                        ];
 
                         fields.forEach((field: any) => {
                           const ref = field.$ref.split("/");
@@ -311,25 +310,25 @@ export function activate(context: vscode.ExtensionContext) {
                             `${mappedType}, // ${field.title}: ${fieldType}`
                           );
                         });
-
-                        fieldSnippet.push(`]>;`);
-
-                        definitionSnippet = [
-                          ...definitionSnippet,
-                          ...fieldSnippet,
-                        ];
                       }
+
+                      fieldSnippet.push(`]>;`);
+
+                      definitionSnippet = [
+                        ...definitionSnippet,
+                        ...fieldSnippet,
+                      ];
                     });
 
-                    if (definitionSnippet.length > 0) {
-                      if (anyOf.length > 1) {
-                        definitionSnippet = [
-                          `export type M${title} = ${MTypes.join(" | ")};`,
-                          "",
-                          ...definitionSnippet,
-                        ];
-                      }
+                    if (anyOf.length > 1) {
+                      definitionSnippet = [
+                        `export type M${title} = ${MTypes.join(" | ")};`,
+                        "",
+                        ...definitionSnippet,
+                      ];
+                    }
 
+                    if (definitionSnippet.length > 0) {
                       fullSnippet = [...fullSnippet, "", ...definitionSnippet];
                     }
                   }
