@@ -12,7 +12,9 @@ jobs:
   build:
     name: Build ${{ matrix.platform.os_name }} Target with Rust ${{ matrix.toolchain }}
     runs-on: ${{ matrix.platform.os }}
-    working-directory: cli
+    defaults:
+      run:
+        working-directory: cli
     strategy:
       fail-fast: false
       matrix:
