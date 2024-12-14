@@ -60,9 +60,21 @@ jobs:
         if: matrix.platform.os_name == 'Windows-x86_64'
       - name: Generate SHA-256
         run: shasum -a 256 target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }} | cut -d ' ' -f 1 > target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}.sha256
-      - name: Release binary and SHA-256 checksum to GitHub
+      - name: Set output artifacts
+        id: set_outputs
+        run: |
+          echo "artifact_path=target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}" >> $GITHUB_ENV
+          echo "sha256_path=target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}.sha256" >> $GITHUB_ENV
+  release:
+    needs: build
+    if: github.event_name == 'release' && github.event.action == 'created'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload Release Assets
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}
-            target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}.sha256
+            ${{ env.artifact_path }}
+            ${{ env.sha256_path }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
