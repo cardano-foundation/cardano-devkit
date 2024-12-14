@@ -10,67 +10,79 @@ permissions:
 
 jobs:
   build:
-    name: Build ${{ matrix.platform.os_name }} Target with Rust ${{ matrix.toolchain }}
-    runs-on: ${{ matrix.platform.os }}
-    defaults:
-      run:
-        working-directory: cli
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - os_name: Linux-x86_64
-            os: ubuntu-20.04
-            target: x86_64-unknown-linux-gnu
-            bin: cardano-devkit-linux-amd64
-          - os_name: Windows-x86_64
-            os: windows-latest
-            target: x86_64-pc-windows-msvc
-            bin: cardano-devkit-amd64.exe
-          - os_name: macOS-x86_64
-            os: macOS-latest
-            target: x86_64-apple-darwin
-            bin: cardano-devkit-darwin-amd64
-          - os_name: macOS-aarch64
-            os: macOS-latest
-            target: aarch64-apple-darwin
-            bin: cardano-devkit-darwin-arm64
-        toolchain:
-          - stable
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+        target:
+          macos-latest: [aarch64-apple-darwin, x86_64-apple-darwin]
+          ubuntu-latest: [x86_64-unknown-linux-gnu]
+          windows-latest: [x86_64-pc-windows-msvc]
+    runs-on: ${{ matrix.platform }}
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Build binary
-        uses: houseabsolute/actions-rust-cross@v0
-        with:
-          command: "build"
-          working-directory: cli
-          target: ${{ matrix.platform.target }}
-          toolchain: ${{ matrix.toolchain }}
-          args: "--locked --release"
-          strip: true
-      - name: Rename binary (linux and macos)
-        run: mv target/${{ matrix.platform.target }}/release/cardano-devkit target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}
-        if: matrix.platform.os_name != 'Windows-x86_64'
-      - name: Rename binary (windows)
-        run: mv target/${{ matrix.platform.target }}/release/cardano-devkit.exe target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}
-        if: matrix.platform.os_name == 'Windows-x86_64'
-      - name: Generate SHA-256
-        run: shasum -a 256 target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }} | cut -d ' ' -f 1 > target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}.sha256
-      - name: Set output artifacts
-        id: set_outputs
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies (Linux only)
+        if: matrix.platform == 'ubuntu-latest'
         run: |
-          echo "artifact_path=target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}" >> $GITHUB_ENV
-          echo "sha256_path=target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}.sha256" >> $GITHUB_ENV
-  release:
-    needs: build
-    if: github.event_name == 'release' && github.event.action == 'created'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Upload Release Assets
-        uses: softprops/action-gh-release@v1
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          files: |
-            ${{ env.artifact_path }}
-            ${{ env.sha256_path }}
+          node-version: lts/*
+          cache: 'yarn'
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ join(matrix.target[matrix.platform], ',') }}
+
+      - name: Cache Rust artifacts
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: true
+
+      - name: Install frontend dependencies
+        run: npm i
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: --target ${{ join(matrix.target[matrix.platform], ',') }}
+
+      - name: Generate SHA-256 checksum
+        run: |
+          cd system/target/release/bundle/
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            for file in *; do
+              CertUtil -hashfile "$file" SHA256 > "$file.sha256"
+            done
+          else
+            for file in *; do
+              sha256sum "$file" > "$file.sha256"
+            done
+          fi
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.platform }}-build
+          path: system/target/release/bundle/
+          
+      - name: Publish Release
+        if: github.event_name == 'release' && github.event.action == 'created'
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Release ${{ github.ref_name }}"
+          releaseBody: "See the assets to download this version."
+          releaseDraft: false
+          prerelease: false

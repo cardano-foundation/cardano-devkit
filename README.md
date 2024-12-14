@@ -17,6 +17,32 @@ About the product: [product specs](PRODUCT.md)
 
 Please note that **Cardano DevKit** is currently under construction. We are actively working on adding more features and improving the existing ones. Stay tuned for updates! 
 
+## 🚀 Getting Started
+
+To run the tauri app locally, please clone the repository and run the following commands:
+
+```
+npm i
+npm run tauri dev
+```
+
+If you want to run cardano-devkit cli commands locally, you can run the following commands:
+
+```
+cd system
+cargo run -- help
+```
+
+## 📦 Building the App
+
+To build the tauri app, you can run the following command:
+
+```
+npm run bundle
+```
+
+This will create a platform-specific exectuable. This executable is able to run as an application with ui, or as a cli tool.
+
 ## Contributing 🤝
 
 All contributions are welcome! Please feel free to open a new thread on the issue tracker or submit a new pull request.
