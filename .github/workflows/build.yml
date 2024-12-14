@@ -47,6 +47,7 @@ jobs:
         uses: houseabsolute/actions-rust-cross@v0
         with:
           command: "build"
+          working-directory: cli
           target: ${{ matrix.platform.target }}
           toolchain: ${{ matrix.toolchain }}
           args: "--locked --release"
