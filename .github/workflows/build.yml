@@ -1,4 +1,4 @@
-name: 🚢 Build and Release
+name: 🚢 Ship Release Artifacts
 
 on:
   workflow_dispatch:
@@ -19,10 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - os_name: Linux-aarch64
-            os: ubuntu-20.04
-            target: aarch64-unknown-linux-musl
-            bin: cardano-devkit-linux-arm64
           - os_name: Linux-x86_64
             os: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
@@ -43,44 +39,6 @@ jobs:
           - stable
     steps:
       - uses: actions/checkout@v3
-
-      - name: Install dependencies for aarch64
-        if: matrix.platform.target == 'aarch64-unknown-linux-musl'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            musl-tools \
-            musl-dev \
-            pkg-config \
-            libssl-dev \
-            gcc-aarch64-linux-gnu \
-            g++-aarch64-linux-gnu \
-            libc6-dev-arm64-cross
-          
-          # Create directory for OpenSSL
-          mkdir -p /tmp/openssl
-          cd /tmp/openssl
-          
-          # Download and extract OpenSSL
-          wget https://www.openssl.org/source/openssl-1.1.1w.tar.gz
-          tar xzf openssl-1.1.1w.tar.gz
-          cd openssl-1.1.1w
-          
-          # Configure and build OpenSSL for aarch64
-          export MACHINE=aarch64
-          export ARCH=arm64
-          export CC=aarch64-linux-gnu-gcc
-          ./Configure linux-aarch64 --prefix=/usr/local/openssl-aarch64 --openssldir=/usr/local/openssl-aarch64
-          make -j$(nproc)
-          sudo make install
-          
-          # Set environment variables
-          echo "OPENSSL_DIR=/usr/local/openssl-aarch64" >> $GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=/usr/local/openssl-aarch64/include" >> $GITHUB_ENV
-          echo "OPENSSL_LIB_DIR=/usr/local/openssl-aarch64/lib" >> $GITHUB_ENV
-          echo "PKG_CONFIG_PATH=/usr/local/openssl-aarch64/lib/pkgconfig" >> $GITHUB_ENV
-          echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
-
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v0
         with:
