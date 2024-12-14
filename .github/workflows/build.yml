@@ -43,6 +43,13 @@ jobs:
           - stable
     steps:
       - uses: actions/checkout@v3
+      - name: Install dependencies for aarch64
+        if: matrix.platform.target == 'aarch64-unknown-linux-musl'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev pkg-config
+          export OPENSSL_DIR=/usr/lib/aarch64-linux-gnu
+          export PKG_CONFIG_PATH=$OPENSSL_DIR/pkgconfig
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v0
         with:
