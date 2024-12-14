@@ -4,6 +4,7 @@ use indicatif::ProgressBar;
 use std::error::Error;
 use std::fs::{File, OpenOptions};
 use std::io::{self, BufReader, Write};
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -187,6 +188,7 @@ fn set_executable_permission(file_path: &Path) -> std::io::Result<()> {
 
 pub fn download_services(yaci_devkit_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
     let yaci_cli_path = yaci_devkit_path.join("yaci-cli");
+    #[cfg(unix)]
     set_executable_permission(&yaci_cli_path.as_path())?;
 
     Command::new(yaci_cli_path)
