@@ -178,17 +178,19 @@ pub async fn check_setup() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn set_executable_permission(file_path: &Path) -> std::io::Result<()> {
-    let metadata = fs::metadata(file_path)?;
-    let mut permissions = metadata.permissions();
-    let mode = permissions.mode() | 0o111; // Add execute permission
-    permissions.set_mode(mode);
-    fs::set_permissions(file_path, permissions)?;
+    #[cfg(unix)]
+    {
+        let metadata = fs::metadata(file_path)?;
+        let mut permissions = metadata.permissions();
+        let mode = permissions.mode() | 0o111; // Add execute permission
+        permissions.set_mode(mode);
+        fs::set_permissions(file_path, permissions)?;
+    }
     Ok(())
 }
 
 pub fn download_services(yaci_devkit_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
     let yaci_cli_path = yaci_devkit_path.join("yaci-cli");
-    #[cfg(unix)]
     set_executable_permission(&yaci_cli_path.as_path())?;
 
     Command::new(yaci_cli_path)
