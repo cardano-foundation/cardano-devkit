@@ -1,4 +1,4 @@
-name: build and release
+name: 🚢 Build and Release
 
 on:
   workflow_dispatch:
@@ -10,8 +10,9 @@ permissions:
 
 jobs:
   build:
-    name: ${{ matrix.platform.os_name }} with rust ${{ matrix.toolchain }}
+    name: Build ${{ matrix.platform.os_name }} Target with Rust ${{ matrix.toolchain }}
     runs-on: ${{ matrix.platform.os }}
+    working-directory: cli
     strategy:
       fail-fast: false
       matrix:
