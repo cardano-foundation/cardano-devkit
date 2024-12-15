@@ -72,19 +72,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: --target ${{ matrix.platform.target }}
-
-      - name: Generate SHA-256 checksum
-        run: |
-          cd core/target/${{ matrix.platform.target }}/release/bundle/
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            for file in *; do
-              CertUtil -hashfile "$file" SHA256 > "$file.sha256"
-            done
-          else
-            for file in *; do
-              sha256sum "$file" > "$file.sha256"
-            done
-          fi
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
