@@ -29,7 +29,7 @@ npm run tauri dev
 If you want to run cardano-devkit cli commands locally, you can run the following commands:
 
 ```
-cd system
+cd core
 cargo run -- help
 ```
 
