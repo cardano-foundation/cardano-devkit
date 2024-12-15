@@ -49,11 +49,19 @@ jobs:
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform.os == 'macOS-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Cache Rust artifacts
         uses: swatinem/rust-cache@v2
         with:
           workspaces: true
+
+      - name: Install (ubuntu only) dependencies
+        if: matrix.platform.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: Install ui dependencies
         run: npm i
@@ -67,7 +75,7 @@ jobs:
 
       - name: Generate SHA-256 checksum
         run: |
-          cd core/target/release/bundle/
+          cd core/target/${{ matrix.platform.target }}/release/bundle/
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             for file in *; do
               CertUtil -hashfile "$file" SHA256 > "$file.sha256"
@@ -82,7 +90,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.platform.target }}-build
-          path: core/target/release/bundle/
+          path: core/target/${{ matrix.platform.target }}/release/bundle/
           
       - name: Publish Release
         if: github.event_name == 'release' && github.event.action == 'created'
