@@ -1,5 +1,6 @@
 use std::path::Path;
 use std::process::Command;
+use std::env;
 
 use clap::Parser;
 use clap::Subcommand;
@@ -44,6 +45,16 @@ enum Commands {
 
 #[tokio::main]
 async fn main() {
+    let is_terminal = env::args().len() > 1;
+
+    if is_terminal {
+        run_cli().await;
+    } else {
+        cardano_devkit_lib::run_tauri();
+    }
+}
+
+async fn run_cli() {
     let os = std::env::consts::OS;
     let arch = std::env::consts::ARCH;
 
