@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
-import Landing from './pages/landing';
+import Landing from './pages/Landing';
 import { ROUTES } from './constants/routes';
 
 const Router = () => {
