@@ -128,6 +128,5 @@ pub fn get_config() -> Config {
 }
 
 pub fn update_from_string(json: &str) -> Config {
-    let mut config = CONFIG.lock().unwrap();
     Config::from_string(json).save_to_file()
 }
