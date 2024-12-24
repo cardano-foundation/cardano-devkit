@@ -10,13 +10,18 @@ import {
 } from "@/components/ui/sidebar"
 import cardanoBlack from "@/assets/cardanoBlack.svg"
 import { ROUTES } from "@/constants/routes"
-import { Home } from "lucide-react"
+import { CloudDownload, Home } from "lucide-react"
 
 const items = [
     {
         title: "Home",
         url: ROUTES.LANDING,
         icon: Home,
+    },
+    {
+        title: "Setup",
+        url: ROUTES.SETUP,
+        icon: CloudDownload,
     },
 
 ]

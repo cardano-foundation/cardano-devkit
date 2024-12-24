@@ -265,6 +265,9 @@ pub async fn download_and_configure_yaci_devkit(
 
     let yaci_cli_home = format!("\nyaci.cli.home={}\n", services_path.display());
     download_properties_file.write_all(yaci_cli_home.as_bytes())?;
-
+    log(&format!(
+        "🚀 Yaci DevKit has been downloaded and configured successfully at: {}",
+        yaci_devkit_path.display()
+    ));
     Ok(())
 }

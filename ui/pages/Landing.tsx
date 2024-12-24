@@ -12,8 +12,9 @@ function Landing() {
     }
 
     return (
-        <main className="container">
-            <h1>Welcome to Tauri + React</h1>
+        <main className="container w-auto">
+
+            <h1>Welcome to Tauri + ReactWelcome to Tauri + ReactWelcome to Tauri + ReactWelcome to Tauri + ReactWelcome to Tauri + React</h1>
 
             <div className="row">
                 <a href="https://vitejs.dev" target="_blank">
