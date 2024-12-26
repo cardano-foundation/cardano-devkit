@@ -123,7 +123,6 @@ pub fn load() {
 }
 
 pub fn get_config() -> Config {
-    CONFIG.lock().unwrap().clone();
     Config::load()
 }
 

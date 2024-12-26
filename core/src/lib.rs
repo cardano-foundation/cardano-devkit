@@ -1,5 +1,4 @@
 use std::fs;
-use std::fs::File;
 use std::path::Path;
 
 mod config;
