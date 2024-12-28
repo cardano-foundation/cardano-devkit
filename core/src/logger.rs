@@ -66,6 +66,7 @@ fn parse_verbosity(verbosity: usize) -> Verbosity {
     }
 }
 
+#[allow(dead_code)]
 pub fn init(verbosity: usize) {
     let mut logger = LOGGER.lock().unwrap();
     *logger = Logger::new(parse_verbosity(verbosity));

@@ -1,4 +1,3 @@
-use crate::logger::log;
 use dirs::home_dir;
 use fs_extra::dir::create_all;
 use lazy_static::lazy_static;
@@ -69,7 +68,8 @@ impl Config {
         }
     }
 
-    fn save_to_file(self) -> Self {
+    #[allow(dead_code)]
+    pub fn save_to_file(self) -> Self {
         let json_content =
             serde_json::to_string_pretty(&self).expect("Failed to serialize config.");
         let config_path = Path::new(&get_devkit_root())
@@ -80,10 +80,12 @@ impl Config {
         self
     }
 
+    #[allow(dead_code)]
     pub fn from_string(json: &str) -> Self {
         serde_json::from_str(json).expect("Failed to parse config.")
     }
 
+    #[allow(dead_code)]
     pub fn to_string(&self) -> String {
         serde_json::to_string_pretty(&self).expect("Failed to serialize config.")
     }
@@ -109,12 +111,10 @@ pub fn is_initialized() -> bool {
 }
 
 pub fn init() -> Config {
-    if is_initialized() {
-        log("Config already initialized. Skipping initialization.");
-        get_config()
-    } else {
-        Config::create_config_file()
+    if !is_initialized() {
+        load();
     }
+    get_config()
 }
 
 pub fn load() {
@@ -123,9 +123,12 @@ pub fn load() {
 }
 
 pub fn get_config() -> Config {
-    Config::load()
+    CONFIG.lock().unwrap().clone()
 }
 
+#[allow(dead_code)]
 pub fn update_from_string(json: &str) -> Config {
-    Config::from_string(json).save_to_file()
+    Config::from_string(json).save_to_file();
+    load();
+    get_config()
 }

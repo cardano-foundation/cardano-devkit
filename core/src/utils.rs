@@ -15,6 +15,7 @@ use zip::read::ZipArchive;
 use crate::config;
 use crate::logger::{error, log};
 
+#[allow(dead_code)]
 pub fn print_header() {
     const VERSION: &str = env!("CARGO_PKG_VERSION");
     println!(
@@ -149,6 +150,7 @@ pub fn resolve_home_symbol(path: &str) -> String {
     path.to_string()
 }
 
+#[allow(dead_code)]
 pub fn default_config_path() -> PathBuf {
     let mut config_path = home_dir().unwrap_or_else(|| PathBuf::from("~"));
     config_path.push(".cardano-devkit");
