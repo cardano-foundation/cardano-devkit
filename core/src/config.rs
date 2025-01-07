@@ -1,11 +1,9 @@
-use crate::logger::log;
 use dirs::home_dir;
 use fs_extra::dir::create_all;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::fs::{self};
 use std::path::Path;
-use std::process::exit;
 use std::sync::Mutex;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -37,7 +35,23 @@ impl Config {
         }
     }
 
-    fn load(path: Option<String>) -> Self {
+    fn create_config_file() -> Self {
+        let default_config = Config::default(get_devkit_root());
+
+        let json_content =
+            serde_json::to_string_pretty(&default_config).expect("Failed to serialize config.");
+        let config_path = Path::new(&get_devkit_root())
+            .join("config.json")
+            .to_string_lossy()
+            .to_string();
+        if let Some(parent) = Path::new(&config_path).parent() {
+            create_all(parent, true).expect("Failed to create config directory.");
+        }
+        fs::write(Path::new(&config_path), json_content).expect("Failed to write config file.");
+        default_config
+    }
+
+    fn load() -> Self {
         let config_path = Path::new(&get_devkit_root())
             .join("config.json")
             .to_string_lossy()
@@ -47,28 +61,33 @@ impl Config {
                 fs::read_to_string(config_path).expect("Failed to read config file.");
             serde_json::from_str(&file_content).unwrap_or_else(|_| {
                 eprintln!("Failed to parse config file, using default config.");
-                Config::default(path.unwrap_or(get_devkit_root()))
+                Config::default(get_devkit_root())
             })
         } else {
-            let default_config = Config::default(path.unwrap_or(get_devkit_root()));
-            log(&format!("🚀 Looks like it's your first time using the Cardano DevKit. Let's set up a config for you at: {}", config_path));
-
-            let parent_dir = Path::new(&config_path).parent().unwrap();
-            create_all(parent_dir, false).expect("Failed to create config dir.");
-            let json_content = serde_json::to_string_pretty(&default_config)
-                .expect("Failed to serialize default config.");
-            fs::write(Path::new(&config_path), json_content)
-                .expect("Failed to write default config file.");
-
-            log(&format!(
-                "✅ The Cardano DevKit config file has been created successfully! Please review its contents, and if you're happy with it, run cardano-devkit again to initialize its components: {:#?}",
-                default_config
-            ));
-            log(
-                "💡 Hint: The services directory will take up a few hundred megabytes since it will contain the cardano-node, yaci-store, and other services. You can change its path if you prefer not to store it in your home folder."
-            );
-            exit(0);
+            Self::create_config_file()
         }
+    }
+
+    #[allow(dead_code)]
+    pub fn save_to_file(self) -> Self {
+        let json_content =
+            serde_json::to_string_pretty(&self).expect("Failed to serialize config.");
+        let config_path = Path::new(&get_devkit_root())
+            .join("config.json")
+            .to_string_lossy()
+            .to_string();
+        fs::write(Path::new(&config_path), json_content).expect("Failed to write config file.");
+        self
+    }
+
+    #[allow(dead_code)]
+    pub fn from_string(json: &str) -> Self {
+        serde_json::from_str(json).expect("Failed to parse config.")
+    }
+
+    #[allow(dead_code)]
+    pub fn to_string(&self) -> String {
+        serde_json::to_string_pretty(&self).expect("Failed to serialize config.")
     }
 }
 
@@ -76,6 +95,7 @@ lazy_static! {
     static ref CONFIG: Mutex<Config> = Mutex::new(Config::default(get_devkit_root()));
 }
 
+#[tauri::command]
 pub fn get_devkit_root() -> String {
     if let Some(home_path) = home_dir() {
         format!("{}/.cardano-devkit", home_path.as_path().display())
@@ -84,11 +104,31 @@ pub fn get_devkit_root() -> String {
     }
 }
 
-pub fn init(path: Option<String>) {
+#[tauri::command]
+pub fn is_initialized() -> bool {
+    let devkit_root = get_devkit_root();
+    Path::new(&devkit_root).exists()
+}
+
+pub fn init() -> Config {
+    if !is_initialized() {
+        load();
+    }
+    get_config()
+}
+
+pub fn load() {
     let mut config = CONFIG.lock().unwrap();
-    *config = Config::load(path);
+    *config = Config::load();
 }
 
 pub fn get_config() -> Config {
     CONFIG.lock().unwrap().clone()
+}
+
+#[allow(dead_code)]
+pub fn update_from_string(json: &str) -> Config {
+    Config::from_string(json).save_to_file();
+    load();
+    get_config()
 }

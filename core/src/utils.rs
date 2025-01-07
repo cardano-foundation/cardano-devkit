@@ -9,12 +9,14 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::{fs, process};
+use tauri::Emitter;
 use tokio::io::AsyncWriteExt;
 use zip::read::ZipArchive;
 
 use crate::config;
 use crate::logger::{error, log};
 
+#[allow(dead_code)]
 pub fn print_header() {
     const VERSION: &str = env!("CARGO_PKG_VERSION");
     println!(
@@ -46,6 +48,7 @@ pub async fn download_file(
     url: &str,
     path: &Path,
     indicator_message: Option<IndicatorMessage>,
+    window: &Option<tauri::Window>,
 ) -> Result<(), Box<dyn Error>> {
     let mut response = reqwest::get(url).await?.error_for_status()?;
 
@@ -68,16 +71,28 @@ pub async fn download_file(
     };
 
     let mut file = tokio::fs::File::create(path).await?;
+    let mut download_process: u64 = 0;
     while let Some(chunk) = response.chunk().await? {
         file.write_all(&chunk).await?;
         progress_bar.inc(chunk.len() as u64);
+        download_process += chunk.len() as u64;
+        if let Some(window) = &window {
+            let _ = window.emit(
+                "download-progress",
+                Some((download_process, total_size.unwrap())),
+            );
+        }
     }
 
     progress_bar.finish_with_message(format!("Downloaded {} to {}", url, path.to_string_lossy()));
     return Ok(());
 }
 
-pub fn unzip_file(file_path: &Path, destination: &Path) -> Result<(), Box<dyn std::error::Error>> {
+pub fn unzip_file(
+    file_path: &Path,
+    destination: &Path,
+    window: &Option<tauri::Window>,
+) -> Result<(), Box<dyn std::error::Error>> {
     // Open the ZIP file
     let file = File::open(file_path)?;
     let mut archive = ZipArchive::new(BufReader::new(file))?;
@@ -119,6 +134,9 @@ pub fn unzip_file(file_path: &Path, destination: &Path) -> Result<(), Box<dyn st
 
         progress_bar.set_message(file.name().to_string());
         progress_bar.inc(1);
+        if let Some(window) = &window {
+            let _ = window.emit("unzip-progress", Some((i as u64, file_count as u64)));
+        }
     }
 
     if let Some(root_folder) = root_folder {
@@ -149,6 +167,7 @@ pub fn resolve_home_symbol(path: &str) -> String {
     path.to_string()
 }
 
+#[allow(dead_code)]
 pub fn default_config_path() -> PathBuf {
     let mut config_path = home_dir().unwrap_or_else(|| PathBuf::from("~"));
     config_path.push(".cardano-devkit");
@@ -156,7 +175,7 @@ pub fn default_config_path() -> PathBuf {
     config_path
 }
 
-pub async fn check_setup() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn check_setup(window: Option<tauri::Window>) -> Result<(), Box<dyn std::error::Error>> {
     let config = config::get_config();
     let yaci_devkit_root = resolve_home_symbol(&config.yaci_devkit.path);
     let servcies_root = resolve_home_symbol(&config.yaci_devkit.services_path);
@@ -169,11 +188,11 @@ pub async fn check_setup() -> Result<(), Box<dyn std::error::Error>> {
             yaci_devkit_path,
             services_path,
             &config.yaci_devkit.version,
+            window,
         )
         .await?;
         download_services(yaci_devkit_path)?;
     }
-
     Ok(())
 }
 
@@ -211,6 +230,7 @@ pub async fn download_and_configure_yaci_devkit(
     yaci_devkit_path: &Path,
     services_path: &Path,
     yaci_devkit_version: &str,
+    window: Option<tauri::Window>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let yaci_devkit_path_path = Path::new(&yaci_devkit_path);
     let parent_dir = yaci_devkit_path_path.parent().unwrap();
@@ -240,6 +260,7 @@ pub async fn download_and_configure_yaci_devkit(
             step: "Step 1/2".to_string(),
             emoji: "📥 ".to_string(),
         }),
+        &window,
     )
     .await
     .expect("Failed to download Yaci DevKit");
@@ -252,6 +273,7 @@ pub async fn download_and_configure_yaci_devkit(
     unzip_file(
         parent_dir.join("yaci-devkit.zip").as_path(),
         yaci_devkit_path_path,
+        &window,
     )
     .expect("Failed to unzip Yaci DevKit");
 
@@ -265,6 +287,9 @@ pub async fn download_and_configure_yaci_devkit(
 
     let yaci_cli_home = format!("\nyaci.cli.home={}\n", services_path.display());
     download_properties_file.write_all(yaci_cli_home.as_bytes())?;
-
+    log(&format!(
+        "🚀 Yaci DevKit has been downloaded and configured successfully at: {}",
+        yaci_devkit_path.display()
+    ));
     Ok(())
 }

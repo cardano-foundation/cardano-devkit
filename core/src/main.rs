@@ -1,11 +1,11 @@
-use std::path::Path;
-use std::process::Command;
-use std::env;
-
 use clap::Parser;
 use clap::Subcommand;
 use logger::error;
 use logger::log;
+use std::env;
+use std::path::Path;
+use std::process::exit;
+use std::process::Command;
 use utils::default_config_path;
 
 mod config;
@@ -67,11 +67,24 @@ async fn run_cli() {
     }
 
     let parsed_args = Args::parse();
-    config::init(Some(parsed_args.config));
+    if !config::is_initialized() {
+        log(&format!("🚀 Looks like it's your first time using the Cardano DevKit. Let's set up a config for you at: {}", config::get_devkit_root()));
+        let default_config = config::init();
+        log(&format!(
+                "✅ The Cardano DevKit config file has been created successfully! Please review its contents, and if you're happy with it, run cardano-devkit again to initialize its components: {:#?}",
+                default_config
+            ));
+        log(
+            "💡 Hint: The services directory will take up a few hundred megabytes since it will contain the cardano-node, yaci-store, and other services. You can change its path if you prefer not to store it in your home folder."
+        );
+        exit(0);
+    } else {
+        config::load();
+    }
 
     utils::print_header();
     logger::init(parsed_args.verbose);
-    utils::check_setup().await.unwrap_or_else(|e| {
+    utils::check_setup(None).await.unwrap_or_else(|e| {
         logger::error(&format!(
             "Failed to check your Yaci DevKit and services setup: {}",
             e
@@ -81,7 +94,7 @@ async fn run_cli() {
 
     match parsed_args.command {
         Commands::Init => {
-            utils::check_setup().await.unwrap_or_else(|e| {
+            utils::check_setup(None).await.unwrap_or_else(|e| {
                 logger::error(&format!(
                     "Failed to check your Yaci DevKit and services setup: {}",
                     e
