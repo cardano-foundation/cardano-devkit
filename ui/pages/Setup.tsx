@@ -3,7 +3,6 @@ import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CodeBlock } from "react-code-blocks";
-import { Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 function Setup() {
