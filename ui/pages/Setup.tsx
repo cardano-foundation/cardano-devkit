@@ -1,8 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CodeBlock } from "react-code-blocks";
 import { Loader2 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 function Setup() {
 
@@ -12,6 +14,8 @@ function Setup() {
     const [editMode, setEditMode] = useState(false);
     const [binariesAvailable, setBinariesAvailable] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [downloadStatus, setDownloadStatus] = useState("");
+    const [downloadProgress, setDownloadProgress] = useState(0);
 
     useEffect(() => {
         checkInitialized();
@@ -54,17 +58,36 @@ function Setup() {
             setConfig(response as string);
             checkInitialized();
         });
+    }
 
+    function updateDownloadStatus(status: string, current: number, total: number) {
+        setDownloadStatus(status);
+        setDownloadProgress(Math.round((current / total) * 100));
     }
 
     function downloadBinaries() {
         setIsLoading(true);
-        invoke("download_binaries", {}).then(() => {
-            invoke("is_yaci_devkit_initialized", {}).then((response) => {
-                setBinariesAvailable(response as boolean);
-            });
+        const download = listen("download-progress", (event: any) => {
+            const [current, total] = event.payload as [number, number];
+            updateDownloadStatus("Downloading", current, total);
+        });
+        const zip = listen("unzip-progress", (event: any) => {
+            const [current, total] = event.payload as [number, number];
+            updateDownloadStatus("Unzipping", current, total);
+        });
+        const setupComplete = listen("setup-complete", (event: any) => {
+            setBinariesAvailable(true);
             setIsLoading(false);
         });
+        invoke("download_binaries").catch((err) => {
+            console.error(err);
+        });
+
+        return () => {
+            download.then((fn) => fn());
+            zip.then((fn) => fn());
+            setupComplete.then((fn) => fn());
+        }
     }
 
 
@@ -106,8 +129,8 @@ function Setup() {
                                 <>Binaries Available</> :
                                 isLoading ?
                                     <div className="flex flex-col items-center justify-center space-y-2 p-4">
-                                        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-                                        <p className="text-sm text-gray-500">It can take a few minutes...</p>
+                                        {downloadStatus}
+                                        <Progress value={downloadProgress} />
                                     </div> :
                                     <Button onClick={() => downloadBinaries()}>Download Binaries</Button>
                             }

@@ -1,6 +1,8 @@
 use std::fs;
 use std::path::Path;
 
+use tauri::Emitter;
+
 mod config;
 mod logger;
 mod utils;
@@ -29,13 +31,16 @@ fn save_config(config: &str) -> String {
 }
 
 #[tauri::command]
-async fn download_binaries() {
-    utils::check_setup().await.unwrap_or_else(|e| {
-        logger::error(&format!(
-            "Failed to check your Yaci DevKit and services setup: {}",
-            e
-        ));
-    });
+async fn download_binaries(window: tauri::Window) {
+    utils::check_setup(Some(window.clone()))
+        .await
+        .unwrap_or_else(|e| {
+            logger::error(&format!(
+                "Failed to check your Yaci DevKit and services setup: {}",
+                e
+            ));
+        });
+    window.emit("setup-complete", Some(())).unwrap();
 }
 
 #[tauri::command]

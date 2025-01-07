@@ -84,7 +84,7 @@ async fn run_cli() {
 
     utils::print_header();
     logger::init(parsed_args.verbose);
-    utils::check_setup().await.unwrap_or_else(|e| {
+    utils::check_setup(None).await.unwrap_or_else(|e| {
         logger::error(&format!(
             "Failed to check your Yaci DevKit and services setup: {}",
             e
@@ -94,7 +94,7 @@ async fn run_cli() {
 
     match parsed_args.command {
         Commands::Init => {
-            utils::check_setup().await.unwrap_or_else(|e| {
+            utils::check_setup(None).await.unwrap_or_else(|e| {
                 logger::error(&format!(
                     "Failed to check your Yaci DevKit and services setup: {}",
                     e
