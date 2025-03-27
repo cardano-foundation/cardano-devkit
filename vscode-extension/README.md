@@ -10,7 +10,7 @@ VSCode extension for Cardano Development
 
 Add or modify the JSON files in the `snippets` folder. The file name should be the language identifier. For example, `mesh-react-hooks.json` for hooks in `@meshsdk/react`.
 
-## Publishing the Extension
+## Pre-requisites
 
 Before publishing, make sure you have the Visual Studio Code Extension Manager installed:
 
@@ -18,15 +18,39 @@ Before publishing, make sure you have the Visual Studio Code Extension Manager i
 npm install -g @vscode/vsce
 ```
 
-To generate the `.vsix` file:
+## Test locally
+
+1. Go to the this folder:
+
+```sh
+cd vscode-extension
+```
+
+2. To generate the `.vsix` file:
 
 ```sh
 vsce package
 ```
 
-- You can install the extension from the `.vsix` file to test it locally.
+3. Open the Extensions view by clicking on the square icon in the Sidebar on the Activity Bar, or use the `Ctrl+Shift+X` shortcut. Install the extension by clicking on the `...` icon and selecting `Install from VSIX...`. Select `cardano-devkit-vscode-X.X.X.vsix` file.
 
-To publish the extension to VS Code Marketplace:
+
+## Publish
+
+
+1. Go to the this folder:
+
+```sh
+cd vscode-extension
+```
+
+2. To generate the `.vsix` file:
+
+```sh
+vsce package
+```
+
+3. To publish the extension to VS Code Marketplace:
 
 ```sh
 vsce publish
